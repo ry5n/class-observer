@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+  <head>
+    <title>ClassObserver Test</title>
+    <meta charset="utf-8">
+    <style>
+      p { margin: 0.75rem 0; }
+      .a { display: inline-block; padding: 2px 4px; }
+      .a:not([class="a b"]) { background-color: hsl(190, 70%, 85%); }
+    </style>
+  </head>
+  <body>
+    <button type="button" id="foo">Toggle foo</button>
+    <button type="button" id="bar">Toggle bar</button>
+    <button type="button" id="baz">Toggle baz</button>
+
+    <br>
+
+    <p class="js-assist-transition">Target</p>
+
+    <script src="../bower_components/which-transition-end/index.js"></script>
+    <script src="../bower_components/bind/index.js"></script>
+    <script src="../index.js"></script>
+    <script>
+      var target = document.querySelector('.js-assist-transition'),
+          fooTrigger = document.querySelector('#foo'),
+          barTrigger = document.querySelector('#bar'),
+          bazTrigger = document.querySelector('#baz');
+
+      new ClassObserver(target);
+
+      fooTrigger.addEventListener('click', function(event) {
+        target.classList.toggle('foo');
+      }, false);
+
+      barTrigger.addEventListener('click', function(event) {
+        target.classList.toggle('bar');
+      }, false);
+
+      bazTrigger.addEventListener('click', function(event) {
+        target.classList.toggle('baz');
+      }, false);
+    </script>
+  </body>
+</html>

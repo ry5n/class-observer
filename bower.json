@@ -1,0 +1,27 @@
+{
+  "name": "class-observer",
+  "description": "description",
+  "version": "0.0.1",
+  "authors": [
+    "Ryan Frederick <ryan@ryanfrederick.com>"
+  ],
+  "keywords": [
+    "keyword"
+  ],
+  "main": "index.js",
+  "dependencies": {
+    "which-transition-end": "0.0.1",
+    "emitter.js": "1.1.0",
+    "bind": "ry5n/bind"
+  },
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "package.json",
+    "Makefile",
+    "test"
+  ],
+  "license": "MIT",
+  "private": true
+}
