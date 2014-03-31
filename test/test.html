@@ -20,12 +20,12 @@
     <button type="button" id="foo-1">Toggle foo</button>
     <button type="button" id="bar-1">Toggle bar</button>
     <button type="button" id="baz-1">Toggle baz</button>
-    <p><mark id="target-1">Target 1</mark></p>
+    <p><mark id="target-1" class="">Target 1</mark></p>
 
     <button type="button" id="foo-2">Toggle foo</button>
     <button type="button" id="bar-2">Toggle bar</button>
     <button type="button" id="baz-2">Toggle baz</button>
-    <p><mark id="target-2">Target 2</mark></p>
+    <p><mark class="foo" id="target-2">Target 2</mark></p>
 
     <script src="../bower_components/which-transition-end/index.js"></script>
     <script src="../bower_components/bind/index.js"></script>
@@ -39,12 +39,19 @@
           baz1Trigger = document.querySelector('#baz-1'),
           foo2Trigger = document.querySelector('#foo-2'),
           bar2Trigger = document.querySelector('#bar-2'),
-          baz2Trigger = document.querySelector('#baz-2');
+          baz2Trigger = document.querySelector('#baz-2')
+          window.classObservers = [];
 
       slice.call(targets).forEach(function(target) {
-        new ClassObserver(target);
-        target.addEventListener('classChanged', function(e) {
-          console.log(e.detail);
+        var observer = new ClassObserver();
+
+        window.classObservers.push(observer);
+
+        observer.observe(target);
+
+        target.addEventListener('classChange', function(e) {
+          console.log('(' + e.detail.observeeId + ')     oldClass: "' + e.detail.oldClass + '"');
+          console.log('(' + e.detail.observeeId + ') currentClass: "' + e.detail.currentClass + '"');
         });
       });
 

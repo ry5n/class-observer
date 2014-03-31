@@ -70,13 +70,13 @@
         template = '\
           [data-class-observee="' + id + '"] {\
             ' + prop + ': ' + from + ';\
+          }\
+          [data-class-observee="' + id + '"]:not([class="' + currentClass + '"]) {\
+            ' + prop + ': ' + to + ';\
             -webkit-transition: ' + prop + ' 1ms;\
             -moz-transition: ' + prop + ' 1ms;\
             -o-transition: ' + prop + ' 1ms;\
             transition: ' + prop + ' 1ms;\
-          }\
-          [data-class-observee="' + id + '"]:not([class="' + currentClass + '"]) {\
-            ' + prop + ': ' + to + ';\
           }\
         ';
 
@@ -98,28 +98,48 @@
    *   - to: the final value
    */
 
-  function ClassObserver(el, beaconConfig) {
-    this.el = el,
-    this.oldClass = '',
-    this.currentClass = '',
+  function ClassObserver() {
+    this.el,
+    this.oldClass,
+    this.currentClass,
     this.id = newInstanceId(),
-    this.beaconConfig = beaconConfig || {
-      property: 'outline-color',
-      from: '#fff',
-      to: '#000'
-    },
-    this.beacon = document.getElementsByTagName('head')[0].appendChild(document.createElement('style'));
+    this.beaconConfig,
+    this.beacon = document.getElementsByTagName('head')[0].appendChild(document.createElement('style')),
+    this.boundClassChange;
+  }
+
+  ClassObserver.prototype.beaconDefaults = {
+    property: 'outline-color',
+    from: '#fff',
+    to: '#000'
+  };
+
+  ClassObserver.prototype.observe = function(el, beaconConfig) {
+    this.el = el,
+    this.oldClass = null,
+    this.currentClass = null,
+    this.beaconConfig = beaconConfig || this.beaconDefaults;
 
     this.el.setAttribute('data-class-observee', this.id);
-    this.el.addEventListener( transitionend, bind(this.onChange, this) );
+    this.boundClassChange = bind(this.classChange, this);
+    this.el.addEventListener(transitionend, this.boundClassChange, false);
 
     this.update();
-  }
+
+    return this;
+  };
+
+  ClassObserver.prototype.disconnect = function() {
+    this.el.removeAttribute('data-class-observee', this.id);
+    this.el.removeEventListener(transitionend, this.boundClassChange, false);
+
+    return this;
+  };
 
   /**
    * Update internal state:
-   * - Track previous and current class attribute values;
-   * - Update the current observer’s beacon stylesheet to match the new state.
+   * - Track current and previous class attribute values;
+   * - Update the beacon stylesheet to work with the new state.
    */
 
   ClassObserver.prototype.update = function() {
@@ -138,11 +158,10 @@
    * Handle a change to el’s class attribute.
    */
 
-  ClassObserver.prototype.onChange = function(event) {
-
+  ClassObserver.prototype.classChange = function(event) {
     if (
-      event.propertyName === this.beaconConfig.property &&
-      event.elapsedTime < 0.005 // Leave some extra time, just in case.
+      event.elapsedTime < 0.005 &&
+      event.propertyName === this.beaconConfig.property
     ) {
       this.update();
 
@@ -150,13 +169,13 @@
       // duplicate dispatches when restoring a missing class attribute.
 
       if (this.currentClass !== this.oldClass) {
-        var classChanged = new CustomEvent('classChanged', {'detail': {
+        var customEvent = new CustomEvent('classChange', {'detail': {
           'observeeId': this.id,
           'oldClass': this.oldClass,
           'currentClass': this.currentClass
         }});
 
-        this.el.dispatchEvent(classChanged);
+        this.el.dispatchEvent(customEvent);
       }
     }
   };
