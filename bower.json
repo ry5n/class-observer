@@ -11,8 +11,8 @@
   "main": "index.js",
   "dependencies": {
     "which-transition-end": "0.0.1",
-    "emitter.js": "1.1.0",
-    "bind": "ry5n/bind"
+    "bind": "ry5n/bind",
+    "custom-event": "ry5n/custom-event#~0.0.1"
   },
   "ignore": [
     "**/.*",

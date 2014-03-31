@@ -20,24 +20,30 @@
 
     <script src="../bower_components/which-transition-end/index.js"></script>
     <script src="../bower_components/bind/index.js"></script>
+    <script src="../bower_components/custom-event/index.js"></script>
     <script src="../index.js"></script>
     <script>
-      var target = document.querySelector('.js-assist-transition'),
+      var slice = Array.prototype.slice,
+          target = document.querySelector('.js-assist-transition'),
           fooTrigger = document.querySelector('#foo'),
           barTrigger = document.querySelector('#bar'),
-          bazTrigger = document.querySelector('#baz');
+          bazTrigger = document.querySelector('#baz'),
+          observer = new ClassObserver(target);
 
-      new ClassObserver(target);
+      target.addEventListener('classChanged', function(e) {
+        console.log('    oldClass:', e.detail.oldClass);
+        console.log('currentClass:', e.detail.currentClass);
+      });
 
-      fooTrigger.addEventListener('click', function(event) {
+      fooTrigger.addEventListener('click', function(e) {
         target.classList.toggle('foo');
       }, false);
 
-      barTrigger.addEventListener('click', function(event) {
+      barTrigger.addEventListener('click', function(e) {
         target.classList.toggle('bar');
       }, false);
 
-      bazTrigger.addEventListener('click', function(event) {
+      bazTrigger.addEventListener('click', function(e) {
         target.classList.toggle('baz');
       }, false);
     </script>

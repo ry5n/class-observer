@@ -2,15 +2,27 @@
 
 (function (global, factory) {
   if (typeof define === 'function' && define.amd) {
-    define(['which-transition-end', 'bind'], factory);
+    define([
+      'which-transition-end',
+      'bind',
+      'custom-event'
+    ], factory);
   }
   else if (typeof exports === 'object') {
-    module.exports = factory( require('which-transition-end'), require('bind') );
+    module.exports = factory(
+      require('which-transition-end'),
+      require('bind'),
+      require('custom-event')
+    );
   }
   else {
-    global.ClassObserver = factory(global.whichTransitionEnd, global.bind);
+    global.ClassObserver = factory(
+      global.whichTransitionEnd,
+      global.bind,
+      global.CustomEvent
+    );
   }
-}(this, function(whichTransitionEnd, bind) {
+}(this, function(whichTransitionEnd, bind, CustomEvent) {
 
   // style writing
   var transitionend = whichTransitionEnd();
@@ -18,9 +30,6 @@
   function getBeaconStyle(prop, classAttr) {
     var template,
         classSelector;
-
-    // Convert the class
-    // classSelector = '.' + classAttr.replace(/\s+/g, '.');
 
     template = '\
       .js-assist-transition {\
@@ -38,7 +47,8 @@
   }
 
   /**
-   * Constructor
+   * Create a ClassObserver instance that listens for changes on to an element’s
+   * class attribute.
    */
 
   function ClassObserver(el, beaconProp) {
@@ -50,13 +60,7 @@
 
     this.update();
 
-    this.el.addEventListener( transitionend, bind(this.onChange, this) );
-
-    // Testing
-    this.el.addEventListener( 'classChanged', function(event) {
-      console.log('oldClass:', event.detail.oldClass);
-      console.log('curClass:', event.detail.currentClass);
-    });
+    this.el.addEventListener( transitionend, bind(this.change, this) );
   }
 
   ClassObserver.prototype.update = function() {
@@ -65,17 +69,15 @@
     this.beaconStyle.innerHTML = getBeaconStyle(this.beaconProp, this.currentClass);
   };
 
-  ClassObserver.prototype.onChange = function(event) {
+  ClassObserver.prototype.change = function(event) {
     // Leave some extra time, just in case.
     if (event.propertyName === this.beaconProp && event.elapsedTime < 0.005) {
       this.update();
 
-      var classChanged = new CustomEvent('classChanged', {
-        'detail': {
-          'oldClass': this.oldClass,
-          'currentClass': this.currentClass
-        }
-      });
+      var classChanged = new CustomEvent('classChanged', {'detail': {
+        'oldClass': this.oldClass,
+        'currentClass': this.currentClass
+      }});
 
       this.el.dispatchEvent(classChanged);
     }
