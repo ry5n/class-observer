@@ -5,18 +5,27 @@
     <meta charset="utf-8">
     <style>
       p { margin: 0.75rem 0; }
-      .a { display: inline-block; padding: 2px 4px; }
-      .a:not([class="a b"]) { background-color: hsl(190, 70%, 85%); }
+
+      mark {
+        font-family: monospace;
+      }
+
+      mark:after {
+        content: 'class="' attr(class) '"';
+        margin-left: 0.333em;
+      }
     </style>
   </head>
   <body>
-    <button type="button" id="foo">Toggle foo</button>
-    <button type="button" id="bar">Toggle bar</button>
-    <button type="button" id="baz">Toggle baz</button>
+    <button type="button" id="foo-1">Toggle foo</button>
+    <button type="button" id="bar-1">Toggle bar</button>
+    <button type="button" id="baz-1">Toggle baz</button>
+    <p><mark id="target-1">Target 1</mark></p>
 
-    <br>
-
-    <p class="js-assist-transition">Target</p>
+    <button type="button" id="foo-2">Toggle foo</button>
+    <button type="button" id="bar-2">Toggle bar</button>
+    <button type="button" id="baz-2">Toggle baz</button>
+    <p><mark id="target-2">Target 2</mark></p>
 
     <script src="../bower_components/which-transition-end/index.js"></script>
     <script src="../bower_components/bind/index.js"></script>
@@ -24,27 +33,45 @@
     <script src="../index.js"></script>
     <script>
       var slice = Array.prototype.slice,
-          target = document.querySelector('.js-assist-transition'),
-          fooTrigger = document.querySelector('#foo'),
-          barTrigger = document.querySelector('#bar'),
-          bazTrigger = document.querySelector('#baz'),
-          observer = new ClassObserver(target);
+          targets = document.querySelectorAll('mark'),
+          foo1Trigger = document.querySelector('#foo-1'),
+          bar1Trigger = document.querySelector('#bar-1'),
+          baz1Trigger = document.querySelector('#baz-1'),
+          foo2Trigger = document.querySelector('#foo-2'),
+          bar2Trigger = document.querySelector('#bar-2'),
+          baz2Trigger = document.querySelector('#baz-2');
 
-      target.addEventListener('classChanged', function(e) {
-        console.log('    oldClass:', e.detail.oldClass);
-        console.log('currentClass:', e.detail.currentClass);
+      slice.call(targets).forEach(function(target) {
+        new ClassObserver(target);
+        target.addEventListener('classChanged', function(e) {
+          console.log('  observeeId: "' + e.detail.observeeId + '"');
+          console.log('    oldClass: "' + e.detail.oldClass + '"');
+          console.log('currentClass: "' + e.detail.currentClass + '"');
+        });
       });
 
-      fooTrigger.addEventListener('click', function(e) {
-        target.classList.toggle('foo');
+      foo1Trigger.addEventListener('click', function(e) {
+        document.getElementById('target-1').classList.toggle('foo');
       }, false);
 
-      barTrigger.addEventListener('click', function(e) {
-        target.classList.toggle('bar');
+      bar1Trigger.addEventListener('click', function(e) {
+        document.getElementById('target-1').classList.toggle('bar');
       }, false);
 
-      bazTrigger.addEventListener('click', function(e) {
-        target.classList.toggle('baz');
+      baz1Trigger.addEventListener('click', function(e) {
+        document.getElementById('target-1').classList.toggle('baz');
+      }, false);
+
+      foo2Trigger.addEventListener('click', function(e) {
+        document.getElementById('target-2').classList.toggle('foo');
+      }, false);
+
+      bar2Trigger.addEventListener('click', function(e) {
+        document.getElementById('target-2').classList.toggle('bar');
+      }, false);
+
+      baz2Trigger.addEventListener('click', function(e) {
+        document.getElementById('target-2').classList.toggle('baz');
       }, false);
     </script>
   </body>
