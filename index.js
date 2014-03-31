@@ -204,7 +204,8 @@
       // duplicate dispatches when restoring a missing class attribute.
       if (this.isObserving && this.currentClass !== this.oldClass) {
         var changes = {
-          'observeeId': this.id,
+          'target': this.el,
+          'id': this.id,
           'oldClass': this.oldClass,
           'currentClass': this.currentClass
         };

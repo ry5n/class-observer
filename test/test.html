@@ -43,8 +43,8 @@
 
       slice.call(targets).forEach(function(target) {
         var observer = new ClassObserver(function(changes) {
-          console.log('(' + changes.observeeId + ')     oldClass: "' + changes.oldClass + '"');
-          console.log('(' + changes.observeeId + ') currentClass: "' + changes.currentClass + '"');
+          console.log('(' + changes.id + ')     oldClass: "' + changes.oldClass + '"');
+          console.log('(' + changes.id + ') currentClass: "' + changes.currentClass + '"');
         });
 
         window.classObservers.push(observer);
