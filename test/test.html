@@ -44,9 +44,7 @@
       slice.call(targets).forEach(function(target) {
         new ClassObserver(target);
         target.addEventListener('classChanged', function(e) {
-          console.log('  observeeId: "' + e.detail.observeeId + '"');
-          console.log('    oldClass: "' + e.detail.oldClass + '"');
-          console.log('currentClass: "' + e.detail.currentClass + '"');
+          console.log(e.detail);
         });
       });
 
