@@ -2,27 +2,15 @@
 
 (function (global, factory) {
   if (typeof define === 'function' && define.amd) {
-    define([
-      'which-transition-end',
-      'bind',
-      'custom-event'
-    ], factory);
+    define(['which-transition-end', 'bind'], factory);
   }
   else if (typeof exports === 'object') {
-    module.exports = factory(
-      require('which-transition-end'),
-      require('bind'),
-      require('custom-event')
-    );
+    module.exports = factory( require('which-transition-end'), require('bind') );
   }
   else {
-    global.ClassObserver = factory(
-      global.whichTransitionEnd,
-      global.bind,
-      global.CustomEvent
-    );
+    global.ClassObserver = factory(global.whichTransitionEnd, global.bind);
   }
-}(this, function(whichTransitionEnd, bind, CustomEvent) {
+}(this, function(whichTransitionEnd, bind) {
 
   var transitionend = whichTransitionEnd(),
       instanceCount = 0;
@@ -98,15 +86,24 @@
    *   - to: the final value
    */
 
-  function ClassObserver() {
-    this.el,
-    this.oldClass,
-    this.currentClass,
-    this.id = newInstanceId(),
-    this.beaconConfig,
-    this.beacon = document.getElementsByTagName('head')[0].appendChild(document.createElement('style')),
-    this.boundClassChange;
+  function ClassObserver(callback) {
+    this.el = null;
+    this.oldClass = null;
+    this.currentClass = null;
+    this.beaconConfig = null;
+
+    this.boundClassChange = bind(this.classChange, this);
+    this.isObserving = false;
+    this.id = newInstanceId();
+    this.beacon = document.getElementsByTagName('head')[0].appendChild(document.createElement('style'));
+
+    this.callback = callback;
   }
+
+  /**
+   * [beaconDefaults description]
+   * @type {Object}
+   */
 
   ClassObserver.prototype.beaconDefaults = {
     property: 'outline-color',
@@ -114,24 +111,62 @@
     to: '#000'
   };
 
+  /**
+   * [observe description]
+   * @param  {[type]} el           [description]
+   * @param  {[type]} beaconConfig [description]
+   * @return {[type]}              [description]
+   */
+
   ClassObserver.prototype.observe = function(el, beaconConfig) {
-    this.el = el,
-    this.oldClass = null,
-    this.currentClass = null,
+    this.el = el;
     this.beaconConfig = beaconConfig || this.beaconDefaults;
 
-    this.el.setAttribute('data-class-observee', this.id);
-    this.boundClassChange = bind(this.classChange, this);
     this.el.addEventListener(transitionend, this.boundClassChange, false);
+    this.el.setAttribute('data-class-observee', this.id);
+    this.isObserving = true;
 
     this.update();
 
     return this;
   };
 
+  /**
+   * [pause description]
+   * @return {[type]} [description]
+   */
+
+  ClassObserver.prototype.pause = function() {
+    this.isObserving = false;
+
+    return this;
+  };
+
+  /**
+   * [resume description]
+   * @return {[type]} [description]
+   */
+
+  ClassObserver.prototype.resume = function() {
+    this.isObserving = true;
+
+    return this;
+  };
+
+  /**
+   * [disconnect description]
+   * @return {[type]} [description]
+   */
+
   ClassObserver.prototype.disconnect = function() {
+    this.isObserving = false;
     this.el.removeAttribute('data-class-observee', this.id);
     this.el.removeEventListener(transitionend, this.boundClassChange, false);
+
+    this.beaconConfig = null;
+    this.currentClass = null;
+    this.oldClass = null;
+    this.el = null;
 
     return this;
   };
@@ -167,15 +202,15 @@
 
       // Check that the class value actually changed before dispatching. Avoids
       // duplicate dispatches when restoring a missing class attribute.
-
-      if (this.currentClass !== this.oldClass) {
-        var customEvent = new CustomEvent('classChange', {'detail': {
+      if (this.isObserving && this.currentClass !== this.oldClass) {
+        var changes = {
           'observeeId': this.id,
           'oldClass': this.oldClass,
           'currentClass': this.currentClass
-        }});
+        };
 
-        this.el.dispatchEvent(customEvent);
+        // Invoke the callback first passed to the constructor.
+        this.callback(changes);
       }
     }
   };

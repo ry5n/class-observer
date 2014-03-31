@@ -29,7 +29,6 @@
 
     <script src="../bower_components/which-transition-end/index.js"></script>
     <script src="../bower_components/bind/index.js"></script>
-    <script src="../bower_components/custom-event/index.js"></script>
     <script src="../index.js"></script>
     <script>
       var slice = Array.prototype.slice,
@@ -43,16 +42,19 @@
           window.classObservers = [];
 
       slice.call(targets).forEach(function(target) {
-        var observer = new ClassObserver();
+        var observer = new ClassObserver(function(changes) {
+          console.log('(' + changes.observeeId + ')     oldClass: "' + changes.oldClass + '"');
+          console.log('(' + changes.observeeId + ') currentClass: "' + changes.currentClass + '"');
+        });
 
         window.classObservers.push(observer);
 
         observer.observe(target);
 
-        target.addEventListener('classChange', function(e) {
-          console.log('(' + e.detail.observeeId + ')     oldClass: "' + e.detail.oldClass + '"');
-          console.log('(' + e.detail.observeeId + ') currentClass: "' + e.detail.currentClass + '"');
-        });
+        // target.addEventListener('classChange', function(e) {
+        //   console.log('(' + e.detail.observeeId + ')     oldClass: "' + e.detail.oldClass + '"');
+        //   console.log('(' + e.detail.observeeId + ') currentClass: "' + e.detail.currentClass + '"');
+        // });
       });
 
       foo1Trigger.addEventListener('click', function(e) {
