@@ -86,11 +86,6 @@
         window.classObservers.push(observer);
 
         observer.observe(target);
-
-        // target.addEventListener('classChange', function(e) {
-        //   console.log('(' + e.detail.observeeId + ')     oldClass: "' + e.detail.oldClass + '"');
-        //   console.log('(' + e.detail.observeeId + ') currentClass: "' + e.detail.currentClass + '"');
-        // });
       });
 
       foo1Trigger.addEventListener('click', function(e) {
