@@ -51,22 +51,22 @@
    *   Rendered beacon stylesheet
    */
 
-  function renderBeacon(id, config, currentClass) {
+  function renderBeacon(el, id, config, currentClass) {
     var prop = config.property,
         from = config.from,
         to = config.to,
+        existing = window.getComputedStyle(el)['transition'],
         template = '\
-          [data-class-observee="' + id + '"] {\
-            ' + prop + ': ' + from + ';\
-          }\
-          [data-class-observee="' + id + '"]:not([class="' + currentClass + '"]) {\
-            ' + prop + ': ' + to + ';\
-            -webkit-transition: ' + prop + ' 1ms;\
-            -moz-transition: ' + prop + ' 1ms;\
-            -o-transition: ' + prop + ' 1ms;\
-            transition: ' + prop + ' 1ms;\
-          }\
-        ';
+#html [data-class-observee="' + id + '"] {\n\
+  ' + prop + ': ' + from + ';\n\
+}\n\
+#html [data-class-observee="' + id + '"]:not([class="' + currentClass + '"]) {\n\
+  ' + prop + ': ' + to + ';\n\
+  -webkit-transition: ' + existing + ', ' + prop + ' 1ms !important;\n\
+  -moz-transition: ' + existing + ', ' + prop + ' 1ms !important;\n\
+  -o-transition: ' + existing + ', ' + prop + ' 1ms !important;\n\
+  transition: ' + existing + ', ' + prop + ' 1ms !important;\n\
+}';
 
     return template;
   }
@@ -98,6 +98,10 @@
     this.beacon = document.getElementsByTagName('head')[0].appendChild(document.createElement('style'));
 
     this.callback = callback;
+
+    if ( document.getElementById('html') === null ) {
+      document.documentElement.setAttribute('id', 'html');
+    }
   }
 
   /**
@@ -186,7 +190,7 @@
 
     this.currentClass = this.el.getAttribute('class');
 
-    this.beacon.innerHTML = renderBeacon(this.id, this.beaconConfig, this.currentClass);
+    this.beacon.innerHTML = renderBeacon(this.el, this.id, this.beaconConfig, this.currentClass);
   };
 
   /**

@@ -4,28 +4,64 @@
     <title>ClassObserver Test</title>
     <meta charset="utf-8">
     <style>
-      p { margin: 0.75rem 0; }
+      p {
+        margin: 0.75rem 0;
+      }
 
       mark {
+        display: block;
+        padding: 0.25rem;
+        background-color: hsl(120, 90%, 90%);
         font-family: monospace;
+        -webkit-transition: background-color 0.5s;
+        transition: background-color 0.5s;
       }
 
       mark:after {
         content: 'class="' attr(class) '"';
         margin-left: 0.333em;
       }
+
+      .margin-between-m {
+        margin-top: 1.5rem;
+      }
+      .margin-between-m:first-child {
+        margin-top: 0;
+      }
+
+      #target-1.is-foo {
+        background-color: hsl(60, 100%, 70%);
+        -webkit-transition: all 0.5s;
+        transition: all 0.5s;
+      }
+
+      body #target-1.is-bar {
+        background-color: hsl(200, 90%, 90%);
+        -webkit-transition: all 0.5s;
+        transition: all 0.5s;
+      }
+
+      body #target-1.is-baz {
+        background-color: hsl(0, 90%, 90%) !important;
+        -webkit-transition: all 0.5s !important;
+        transition: all 0.5s !important;
+      }
     </style>
   </head>
   <body>
-    <button type="button" id="foo-1">Toggle foo</button>
-    <button type="button" id="bar-1">Toggle bar</button>
-    <button type="button" id="baz-1">Toggle baz</button>
-    <p><mark id="target-1" class="">Target 1</mark></p>
+    <div class="margin-between-m">
+      <button type="button" id="foo-1">Toggle foo</button>
+      <button type="button" id="bar-1">Toggle bar</button>
+      <button type="button" id="baz-1">Toggle baz</button>
+      <p><mark class="target" id="target-1" class="">Target 1</mark></p>
+    </div>
 
-    <button type="button" id="foo-2">Toggle foo</button>
-    <button type="button" id="bar-2">Toggle bar</button>
-    <button type="button" id="baz-2">Toggle baz</button>
-    <p><mark class="foo" id="target-2">Target 2</mark></p>
+    <div class="margin-between-m">
+      <button type="button" id="foo-2">Toggle foo</button>
+      <button type="button" id="bar-2">Toggle bar</button>
+      <button type="button" id="baz-2">Toggle baz</button>
+      <p><mark class="target foo" id="target-2">Target 2</mark></p>
+    </div>
 
     <script src="../bower_components/which-transition-end/index.js"></script>
     <script src="../bower_components/bind/index.js"></script>
@@ -58,27 +94,27 @@
       });
 
       foo1Trigger.addEventListener('click', function(e) {
-        document.getElementById('target-1').classList.toggle('foo');
+        document.getElementById('target-1').classList.toggle('is-foo');
       }, false);
 
       bar1Trigger.addEventListener('click', function(e) {
-        document.getElementById('target-1').classList.toggle('bar');
+        document.getElementById('target-1').classList.toggle('is-bar');
       }, false);
 
       baz1Trigger.addEventListener('click', function(e) {
-        document.getElementById('target-1').classList.toggle('baz');
+        document.getElementById('target-1').classList.toggle('is-baz');
       }, false);
 
       foo2Trigger.addEventListener('click', function(e) {
-        document.getElementById('target-2').classList.toggle('foo');
+        document.getElementById('target-2').classList.toggle('is-foo');
       }, false);
 
       bar2Trigger.addEventListener('click', function(e) {
-        document.getElementById('target-2').classList.toggle('bar');
+        document.getElementById('target-2').classList.toggle('is-bar');
       }, false);
 
       baz2Trigger.addEventListener('click', function(e) {
-        document.getElementById('target-2').classList.toggle('baz');
+        document.getElementById('target-2').classList.toggle('is-baz');
       }, false);
     </script>
   </body>
